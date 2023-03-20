@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Present Ma\'am</string>
+    <string name="create_a_new_account"><font color='#01C6DB'>Create a new account?</font></string>
+    <string name="already_have_an_account"><font color='#01C6DB'>Already have an account?</font></string>
 </resources>
