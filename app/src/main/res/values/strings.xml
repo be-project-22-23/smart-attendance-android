@@ -2,4 +2,54 @@
     <string name="app_name">Present Ma\'am</string>
     <string name="create_a_new_account"><font color='#01C6DB'>Create a new account?</font></string>
     <string name="already_have_an_account"><font color='#01C6DB'>Already have an account?</font></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="student_registration">Student Registration</string>
+    <string name="name">Name</string>
+    <string name="email">Email</string>
+    <string name="roll_no">Roll No.</string>
+    <string name="phone_no">Phone No.</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="next">NEXT</string>
+    <string name="all_attendance">All Attendance</string>
+    <string name="scan">Scan</string>
+    <string name="profile">Profile</string>
+    <string name="student_login">Student Login</string>
+    <string name="login">LOGIN</string>
+    <string name="hurray_we_have_successfully_marked_your_attendance">Hurray!! We have successfully marked your attendance</string>
+    <string-array name="department">
+        <item>Select Your Department</item>
+        <item>Computer Engineering</item>
+        <item>Information Technology</item>
+        <item>Electronics And Telecommunication Engineering</item>
+        <item>Mechanical Engineering</item>
+        <item>Electrical Engineering</item>
+        <item>Chemical Engineering</item>
+        <item>Production Engineering</item>
+        <item>BioTechnology Engineering</item>
+        <item>FirstYear Engineering</item>
+        <item>Civil Engineering</item>
+        <item>Instrumental Engineering</item>
+    </string-array>
+    <string-array name="batch">
+        <item>Select Your Batch</item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+        <item>D</item>
+    </string-array>
+    <string-array name="division">
+        <item>Select Your Division</item>
+        <item>A</item>
+        <item>B</item>
+        <item>C</item>
+    </string-array>
+    <string-array name="currentYear">
+        <item>Select your current year</item>
+        <item>FE</item>
+        <item>SE</item>
+        <item>TE</item>
+        <item>BE</item>
+    </string-array>
 </resources>

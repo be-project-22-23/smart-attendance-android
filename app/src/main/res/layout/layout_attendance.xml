@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/attendanceId"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:padding="15dp"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/attendanceSubject"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/attendanceId"/>
+
+    <TextView
+        android:id="@+id/attendanceYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingRight="5dp"
+        app:layout_constraintLeft_toRightOf="@id/attendanceId"
+        app:layout_constraintTop_toBottomOf="@id/attendanceSubject"/>
+
+    <TextView
+        android:id="@+id/attendanceDivision"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingRight="10dp"
+        app:layout_constraintLeft_toRightOf="@id/attendanceYear"
+        app:layout_constraintTop_toBottomOf="@id/attendanceSubject"/>
+
+    <TextView
+        android:id="@+id/attendanceBatch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:paddingRight="10dp"
+        app:layout_constraintLeft_toRightOf="@id/attendanceDivision"
+        app:layout_constraintTop_toBottomOf="@id/attendanceSubject"/>
+
+
+    <TextView
+        android:id="@+id/attendanceDept"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        app:layout_constraintLeft_toRightOf="@id/attendanceBatch"
+        app:layout_constraintTop_toBottomOf="@id/attendanceSubject"/>
+
+    <TextView
+        android:id="@+id/attendanceStart"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="10dp"
+        app:layout_constraintLeft_toRightOf="@id/attendanceId"
+        app:layout_constraintTop_toBottomOf="@id/attendanceYear"/>
+
+    <TextView
+        android:id="@+id/attendanceDuration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toRightOf="@id/attendanceStart"
+        app:layout_constraintTop_toBottomOf="@id/attendanceYear"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

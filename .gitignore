@@ -13,3 +13,7 @@
 .externalNativeBuild
 .cxx
 local.properties
+.idea/*
+opencv
+app/google-services.json
+gradle
