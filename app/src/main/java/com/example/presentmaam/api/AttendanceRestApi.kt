@@ -14,7 +14,6 @@ interface AttendanceRestApi {
     @POST("/api/markAttendance")
     suspend fun markAttendance(@Body body: Map<String, String>): Response<MessageResponse>
 
-    @Multipart
     @POST("/api/verifyFace")
     suspend fun verifyFace(
         @Body body: Map<String, String>

@@ -2,20 +2,21 @@ package com.example.presentmaam
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
-import android.window.OnBackInvokedDispatcher
-import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
-import com.android.volley.Request
-import com.android.volley.toolbox.StringRequest
-import com.android.volley.toolbox.Volley
+import com.example.presentmaam.api.RetrofitInstance
 import com.example.presentmaam.databinding.ActivityLoginBinding
 import com.example.presentmaam.fragments.LoginFragment
 import com.example.presentmaam.utils.Constants
 import com.example.presentmaam.utils.Utils
 import com.google.firebase.FirebaseApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.opencv.android.BaseLoaderCallback
 import org.opencv.android.LoaderCallbackInterface
 import org.opencv.android.OpenCVLoader
@@ -23,7 +24,7 @@ import org.opencv.android.OpenCVLoader
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
-    private val baseLoaderCallback = object : BaseLoaderCallback(this) {
+    private var baseLoaderCallback = object : BaseLoaderCallback(this) {
         override fun onManagerConnected(status: Int) {
             when(status) {
                 LoaderCallbackInterface.SUCCESS -> {
@@ -34,6 +35,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
     }
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,23 +43,27 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         FirebaseApp.initializeApp(applicationContext)
 
+        if (!supportFragmentManager.isDestroyed ) {
+            supportFragmentManager.beginTransaction().apply {
+                replace(R.id.frameLayout, LoginFragment())
+                commit()
+            }
+        }
         getData()
 
-        handleBackPressed()
-
         getPermissions()
-
-        val studentId = Utils.getValueFromSharedPreferences(this, Constants.STUDENT_ID_KEY)
-        if (!studentId.isNullOrEmpty() && studentId.isNotBlank()) {
-            Constants.studentId = studentId.toInt()
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-        }
     }
 
     private fun getPermissions(){
         if(checkSelfPermission(android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED){
             requestPermissions(arrayOf(android.Manifest.permission.CAMERA, android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION), 101)
+        }
+    }
+
+    override fun onWindowFocusChanged(hasFocus: Boolean) {
+        super.onWindowFocusChanged(hasFocus)
+        if (hasFocus) {
+            checkToMoveToNewActivity()
         }
     }
 
@@ -71,64 +77,41 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-        val loginFragment = LoginFragment.getInstance(supportFragmentManager)
-        val count = supportFragmentManager.backStackEntryCount
-
-        if (!supportFragmentManager.isDestroyed && count == 0) {
-            supportFragmentManager.beginTransaction().apply {
-                replace(R.id.frameLayout, loginFragment)
-                commit()
-            }
-        }
-
-    }
-
     override fun onResume() {
         super.onResume()
         if(OpenCVLoader.initDebug()) {
             baseLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS)
         }else{
-            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0,this, baseLoaderCallback)
-        }
-    }
-
-    private fun handleBackPressed() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            onBackInvokedDispatcher.registerOnBackInvokedCallback(
-                OnBackInvokedDispatcher.PRIORITY_DEFAULT
-            ) {
-                val count = supportFragmentManager.backStackEntryCount
-                if (count == 0) {
-                    finish()
-                } else {
-                    supportFragmentManager.popBackStack()
-                }
-            }
-        } else {
-            onBackPressedDispatcher.addCallback(this /* lifecycle owner */, object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    val count = supportFragmentManager.backStackEntryCount
-                    if (count == 0) {
-                        finish()
-                    } else {
-                        supportFragmentManager.popBackStack()
-                    }
-                }
-            })
+            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_4_0,applicationContext, baseLoaderCallback)
         }
     }
 
     private fun getData() {
-        val mRequestQueue = Volley.newRequestQueue(this)
-
-        val mStringRequest = StringRequest(Request.Method.GET, Constants.BASE_URL,
-            {
-                Toast.makeText(applicationContext, "Hi! Everything is up and running", Toast.LENGTH_LONG).show()
+        scope.launch {
+            val response = RetrofitInstance.authApi.flightTest()
+            withContext(Dispatchers.Main) {
+                if (response.isSuccessful) {
+                    Toast.makeText(applicationContext, "Hi! Everything is up and running", Toast.LENGTH_LONG).show()
+                    checkToMoveToNewActivity()
+                } else {
+                    Toast.makeText(applicationContext, "Sorry we are offline", Toast.LENGTH_LONG).show()
+                }
             }
-        ) { Toast.makeText(applicationContext, "Sorry we are offline", Toast.LENGTH_LONG).show() }
-        mRequestQueue.add(mStringRequest)
+        }
+    }
+
+    private fun checkToMoveToNewActivity() {
+        val studentId = Utils.getValueFromSharedPreferences(this, Constants.STUDENT_ID_KEY)
+        if (!studentId.isNullOrEmpty() && studentId.isNotBlank()) {
+            Constants.studentId = studentId.toInt()
+            val intent = Intent(this, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }

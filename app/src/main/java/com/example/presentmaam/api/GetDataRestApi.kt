@@ -20,7 +20,7 @@ interface GetDataRestApi {
 
     @GET("/api/getAttendanceById")
     suspend fun getAttendanceById(
-        @Query("attendanceId")
+        @Query("id")
         attendanceId: String
     ) : Response<ResponseModel<Attendance>>
 }

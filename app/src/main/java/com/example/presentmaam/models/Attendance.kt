@@ -11,7 +11,7 @@ data class Attendance(
     @SerializedName("students") val students: String,
     @SerializedName("duration") val duration: Long,
     @SerializedName("teacherId") val teacherId: Int,
-    @SerializedName("classDivision") val classDivision: Int,
+    @SerializedName("classDivision") val classDivision: String,
     @SerializedName("isOnGoing") val isOnGoing: Int,
     @SerializedName("classBatch") val classBatch: String
 )

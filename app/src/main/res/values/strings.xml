@@ -18,6 +18,7 @@
     <string name="student_login">Student Login</string>
     <string name="login">LOGIN</string>
     <string name="hurray_we_have_successfully_marked_your_attendance">Hurray!! We have successfully marked your attendance</string>
+    <string name="please_keep_a_plain_background_while_clicking_the_photos_for_better_results">Please keep a plain background while clicking the photos for better results</string>
     <string-array name="department">
         <item>Select Your Department</item>
         <item>Computer Engineering</item>

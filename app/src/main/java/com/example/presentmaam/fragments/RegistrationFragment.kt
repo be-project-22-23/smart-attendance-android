@@ -11,6 +11,8 @@ import com.example.presentmaam.FaceActivity
 import com.example.presentmaam.databinding.FragmentRegistrationBinding
 import com.example.presentmaam.models.Student
 import com.example.presentmaam.utils.Constants
+import kotlinx.coroutines.cancel
+import java.util.concurrent.CancellationException
 
 /**
  * A simple [Fragment] subclass.
@@ -19,7 +21,6 @@ import com.example.presentmaam.utils.Constants
  */
 class RegistrationFragment : Fragment() {
 
-    private lateinit var fragmentManager: FragmentManager
     private lateinit var binding: FragmentRegistrationBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
@@ -31,9 +32,7 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.login.setOnClickListener {
-            if (!fragmentManager.isDestroyed) {
-                fragmentManager.popBackStack()
-            }
+                parentFragmentManager.popBackStack()
         }
 
         binding.register.setOnClickListener {
@@ -58,29 +57,6 @@ class RegistrationFragment : Fragment() {
             Constants.student = student
             val intent = Intent(activity, FaceActivity::class.java)
             startActivity(intent)
-        }
-    }
-
-    companion object {
-        private var registrationFragment: RegistrationFragment? = null
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param fragmentManager of type [FragmentManager]
-         * @return A new instance of fragment RegistrationFragment.
-         */
-        @JvmStatic
-        fun getInstance(fragmentManager: FragmentManager) : RegistrationFragment {
-            return registrationFragment?.let {
-                it.fragmentManager = fragmentManager
-                return it
-            } ?: run {
-                registrationFragment = RegistrationFragment().apply {
-                    this.fragmentManager = fragmentManager
-                }
-                return registrationFragment as RegistrationFragment
-            }
         }
     }
 }

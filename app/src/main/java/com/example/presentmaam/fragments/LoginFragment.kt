@@ -16,15 +16,19 @@ import com.example.presentmaam.api.RetrofitInstance
 import com.example.presentmaam.databinding.FragmentLoginBinding
 import com.example.presentmaam.utils.Constants
 import com.example.presentmaam.utils.Utils
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.concurrent.CancellationException
 
 class LoginFragment : Fragment() {
 
     private lateinit var binding: FragmentLoginBinding
-    private lateinit var fragmentManager: FragmentManager
     private lateinit var context: Context
+    private val scope = CoroutineScope(Job() + Dispatchers.IO)
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         // Inflate the layout for this fragment
@@ -38,12 +42,10 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.register.setOnClickListener {
-            if (!fragmentManager.isDestroyed) {
-                fragmentManager.beginTransaction().apply {
-                    replace(R.id.frameLayout, RegistrationFragment.getInstance(fragmentManager))
-                    addToBackStack(null)
+                parentFragmentManager.beginTransaction().apply {
+                    replace(R.id.frameLayout, RegistrationFragment())
+                    addToBackStack("login")
                     commit()
-                }
             }
         }
 
@@ -53,7 +55,7 @@ class LoginFragment : Fragment() {
             if (email.isEmpty() || password.isEmpty()) {
                 return@setOnClickListener
             }
-            Constants.scope.launch {
+            scope.launch {
                 val body = HashMap<String, String>()
                 body["email"] = email
                 body["password"] = password
@@ -68,11 +70,10 @@ class LoginFragment : Fragment() {
                                 Constants.STUDENT_ID_KEY,
                                 studentId.toString()
                             )
-                            val stat = Utils.getValueFromSharedPreferences(context, Constants.STUDENT_ID_KEY)
-                            Log.d("Ashish", stat.toString())
                             val message = response.body()?.message
                             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
                             val intent = Intent(activity, MainActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                             startActivity(intent)
                         }
                     }
@@ -81,26 +82,8 @@ class LoginFragment : Fragment() {
         }
     }
 
-    companion object {
-        private var loginFragment: LoginFragment? = null
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param fragmentManager of type FragmentManager
-         * @return A new instance of fragment LoginFragment.
-         */
-        @JvmStatic
-        fun getInstance(fragmentManager: FragmentManager) : LoginFragment {
-            return loginFragment?.let {
-                it.fragmentManager = fragmentManager
-                return it
-            } ?: run {
-                loginFragment = LoginFragment().apply {
-                    this.fragmentManager = fragmentManager
-                }
-                return loginFragment as LoginFragment
-            }
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        scope.cancel()
     }
 }

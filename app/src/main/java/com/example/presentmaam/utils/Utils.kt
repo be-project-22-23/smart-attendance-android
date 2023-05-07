@@ -1,9 +1,11 @@
 package com.example.presentmaam.utils
 
+import android.R
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.preference.PreferenceManager
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
@@ -24,6 +26,14 @@ object Utils {
         val sh: SharedPreferences =
             context.getSharedPreferences(getApplicationName(context), MODE_PRIVATE)
         return sh.getString(key, "")
+    }
+
+    fun removeValueFromSharedPreferences(context: Context, key: String) {
+        val sharedPreferences: SharedPreferences =
+            context.getSharedPreferences(getApplicationName(context), MODE_PRIVATE)
+        val myEdit = sharedPreferences.edit()
+        myEdit.remove(key)
+        myEdit.apply()
     }
 
     private fun getApplicationName(context: Context): String {

@@ -13,6 +13,11 @@ import com.example.presentmaam.adapter.AttendanceAdapter
 import com.example.presentmaam.databinding.FragmentAllAttendanceBinding
 import com.example.presentmaam.models.Attendance
 import com.example.presentmaam.utils.Constants
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancel
+import java.util.concurrent.CancellationException
 
 class AllAttendanceFragment : Fragment(), AttendanceAdapter.OnItemClickListener {
 
@@ -33,18 +38,30 @@ class AllAttendanceFragment : Fragment(), AttendanceAdapter.OnItemClickListener 
         feedList = Constants.allAttendance?.toMutableList() ?: run {
             ArrayList()
         }
-        val adapter = AttendanceAdapter(feedList, this)
-        binding.allAttendance.adapter = adapter
-        binding.allAttendance.setHasFixedSize(true)
-        val  layoutManager = LinearLayoutManager(requireContext())
-        binding.allAttendance.layoutManager = layoutManager
-        val divider = DividerItemDecoration(requireContext(), layoutManager.orientation)
-        binding.allAttendance.addItemDecoration(divider)
+        if (feedList.isEmpty()) {
+            binding.allAttendance.visibility = View.GONE
+            binding.noAttendance.visibility = View.VISIBLE
+        } else {
+            val adapter = AttendanceAdapter(feedList, this)
+            binding.allAttendance.adapter = adapter
+            binding.allAttendance.setHasFixedSize(true)
+            val layoutManager = LinearLayoutManager(requireContext())
+            binding.allAttendance.layoutManager = layoutManager
+            val divider = DividerItemDecoration(requireContext(), layoutManager.orientation)
+            binding.allAttendance.addItemDecoration(divider)
+            binding.noAttendance.visibility = View.GONE
+        }
     }
 
     override fun onItemClicked(position: Int) {
         Constants.attendance = Constants.allAttendance?.get(position)
         val intent = Intent(requireActivity(), AttendanceActivity::class.java)
         startActivity(intent)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        feedList = emptyList()
+        binding.allAttendance.adapter = null
     }
 }
