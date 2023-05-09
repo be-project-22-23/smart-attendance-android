@@ -2,13 +2,14 @@ package com.example.presentmaam.utils
 
 import com.example.presentmaam.R
 import com.example.presentmaam.models.Attendance
+import com.example.presentmaam.models.AttendanceCountModel
 import com.example.presentmaam.models.Student
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 object Constants {
-    val BASE_URL = "http://192.168.25.56:3000"
+    val BASE_URL = "http://192.168.43.49:3000"
     val resourceIds = arrayOf(
         R.mipmap.ic_laugh,
         R.mipmap.ic_normal,
@@ -28,5 +29,5 @@ object Constants {
     var studentId: Int? = null
     var allAttendance: List<Attendance>? = null
     var attendance: Attendance? = null
-    const val cancellationMessage = "Cancel scope because of the destroy of fragment or activity"
+    var attendanceCount: AttendanceCountModel? = null
 }

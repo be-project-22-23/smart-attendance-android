@@ -34,7 +34,6 @@ class ScanFragment : Fragment() {
     private lateinit var cameraSource: CameraSource
     private lateinit var callback: SurfaceHolder.Callback
     private lateinit var binding: FragmentScanBinding
-    private val scope = CoroutineScope(Job() + Dispatchers.IO)
     private var isRequestMade = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -96,23 +95,20 @@ class ScanFragment : Fragment() {
                 if (qrCodes.size() != 0) {
                     val qrCode = qrCodes.valueAt(0)
                     val value = qrCode.rawValue
-                    isRequestMade = true
-                    scope.launch {
-                        val response = RetrofitInstance.getDataApi.getAttendanceById(value)
-                        withContext(Dispatchers.Main) {
-                            if (response.isSuccessful) {
-                                barcodeDetector.release()
-                                cameraSource.stop()
-                                cameraSource.release()
-                                binding.surfaceView.holder.removeCallback(callback)
-                                Constants.attendance = response.body()?.data
-                                val intent =
-                                    Intent(requireActivity(), AttendanceActivity::class.java)
-                                startActivity(intent)
-                            }
-                        }
+                    Constants.attendance = Constants.allAttendance?.first {
+                        it.attendanceId == value.toInt()
                     }
-                    Log.d("ScanFragment", "QR code value: ${qrCode.rawValue}")
+                    if (Constants.attendance == null) {
+                        return
+                    }
+                    isRequestMade = true
+                    Log.d("ScanFragment", "QR code value: ${qrCode.rawValue} and corresponding attendance is ${Constants.attendance}")
+                    barcodeDetector.release()
+                    cameraSource.stop()
+                    cameraSource.release()
+                    binding.surfaceView.holder.removeCallback(callback)
+                    val intent = Intent(requireActivity(), AttendanceActivity::class.java)
+                    startActivity(intent)
                 }
             }
         })
@@ -120,7 +116,6 @@ class ScanFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        scope.cancel()
         barcodeDetector.release()
         cameraSource.stop()
         cameraSource.release()

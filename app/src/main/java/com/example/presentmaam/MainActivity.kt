@@ -29,7 +29,6 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        Log.d("MainActivity", "created")
 
         val studentId = Utils.getValueFromSharedPreferences(this, Constants.STUDENT_ID_KEY)?.toInt()
 
@@ -38,33 +37,44 @@ class MainActivity : AppCompatActivity() {
             finish()
         }
         scope.launch {
-            val attendanceResponse = RetrofitInstance.getDataApi.getAllAttendance()
-            withContext(Dispatchers.Main) {
-                if (attendanceResponse.isSuccessful) {
-                    val attendanceList = attendanceResponse.body()?.data ?: run {
-                        ArrayList()
-                    }
-                    Constants.allAttendance = attendanceList
-                    handleStateChange()
-                } else {
-                    Toast.makeText(
-                        this@MainActivity,
-                        attendanceResponse.message(),
-                        Toast.LENGTH_LONG
-                    ).show()
-                    finish()
-                }
-            }
             val studentResponse = RetrofitInstance.getDataApi.getStudentDetails(studentId.toString())
             if (studentResponse.isSuccessful) {
                 val studentDetails = studentResponse.body()?.data ?: run {
                     Student(studentId = 1, name = "test", email = "test@test.com", password = "password", rollNo = "test", department = "Computer Engineering", batch = "A", photoUrl = "https://static.generated.photos/vue-static/face-generator/landing/wall/14.jpg", currentYear = "BE", phoneNumber = "1234567890", division = "A", cpassword = null, createdAt = null)
                 }
-                Constants.student = studentDetails
-                handleStateChange()
+                val attendanceResponse = RetrofitInstance.getDataApi.getAllAttendance(
+                    studentDetails.department, studentDetails.currentYear, studentDetails.division)
+                withContext(Dispatchers.Main) {
+                    Constants.student = studentDetails
+                    if (attendanceResponse.isSuccessful) {
+                        val attendanceList = attendanceResponse.body()?.data ?: run {
+                            ArrayList()
+                        }
+                        Constants.allAttendance = attendanceList
+                        handleStateChange()
+                    } else {
+                        Toast.makeText(
+                            this@MainActivity,
+                            attendanceResponse.message(),
+                            Toast.LENGTH_LONG
+                        ).show()
+                        finish()
+                    }
+                }
             } else {
                 Toast.makeText(this@MainActivity, studentResponse.message(),Toast.LENGTH_LONG).show()
                 finish()
+            }
+            val attendanceCount = RetrofitInstance.getDataApi.getAttendanceCount(studentId.toString())
+            withContext(Dispatchers.Main) {
+                if (attendanceCount.isSuccessful) {
+                    Constants.attendanceCount = attendanceCount.body()
+                    handleStateChange()
+                } else {
+                    Toast.makeText(this@MainActivity, attendanceCount.message(), Toast.LENGTH_LONG)
+                        .show()
+                    finish()
+                }
             }
         }
 
@@ -88,7 +98,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun handleStateChange() {
-        if (Constants.student == null || Constants.allAttendance == null) {
+        if (Constants.student == null || Constants.allAttendance == null || Constants.attendanceCount == null) {
             return
         }
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_navigation)
