@@ -2,7 +2,6 @@ package com.example.presentmaam
 
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -20,7 +19,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.concurrent.CancellationException
 
 class MainActivity : AppCompatActivity() {
 
@@ -42,10 +40,12 @@ class MainActivity : AppCompatActivity() {
                 val studentDetails = studentResponse.body()?.data ?: run {
                     Student(studentId = 1, name = "test", email = "test@test.com", password = "password", rollNo = "test", department = "Computer Engineering", batch = "A", photoUrl = "https://static.generated.photos/vue-static/face-generator/landing/wall/14.jpg", currentYear = "BE", phoneNumber = "1234567890", division = "A", cpassword = null, createdAt = null)
                 }
+                withContext(Dispatchers.Main) {
+                    Constants.student = studentDetails
+                }
                 val attendanceResponse = RetrofitInstance.getDataApi.getAllAttendance(
                     studentDetails.department, studentDetails.currentYear, studentDetails.division)
                 withContext(Dispatchers.Main) {
-                    Constants.student = studentDetails
                     if (attendanceResponse.isSuccessful) {
                         val attendanceList = attendanceResponse.body()?.data ?: run {
                             ArrayList()

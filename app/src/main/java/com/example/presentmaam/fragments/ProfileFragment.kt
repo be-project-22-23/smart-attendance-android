@@ -3,6 +3,7 @@ package com.example.presentmaam.fragments
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,20 +29,20 @@ class ProfileFragment : Fragment() {
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        with(Constants.student!!) {
-            binding.name.text = "Name: ${this.name}"
-            binding.batch.text = "Batch: ${this.batch}"
-            binding.rollNo.text = "RollNo. ${this.rollNo}"
-            binding.dept.text = "Department: ${this.department}"
-            binding.division.text = "Division: ${this.division}"
-            binding.email.text = "Email: ${this.email}"
-            binding.year.text = "Current Year: ${this.currentYear}"
-            binding.phoneNumber.text = "Phone Number: ${this.phoneNumber}"
+    override fun onResume() {
+        super.onResume()
+        Log.d("Profile", Constants.student.toString())
+        with(Constants.student) {
+            binding.name.text = "Name: ${this?.name}"
+            binding.batch.text = "Batch: ${this?.batch}"
+            binding.rollNo.text = "RollNo. ${this?.rollNo}"
+            binding.dept.text = "Department: ${this?.department}"
+            binding.division.text = "Division: ${this?.division}"
+            binding.email.text = "Email: ${this?.email}"
+            binding.year.text = "Current Year: ${this?.currentYear}"
+            binding.phoneNumber.text = "Phone Number: ${this?.phoneNumber}"
             Glide.with(requireContext())
-                .load(this.photoUrl?.split(" ")?.get(0))
+                .load(this?.photoUrl?.split(" ")?.get(0))
                 .placeholder(R.drawable.baseline_person_24)
                 .into(binding.profilePhoto)
         }
@@ -58,12 +59,7 @@ class ProfileFragment : Fragment() {
 
     @SuppressLint("SetTextI18n")
     private fun addDataToPieChart() {
-        val percentage = (Constants.attendanceCount?.presentAttendance?.let {
-            Constants.attendanceCount?.allAttendance?.div(
-                it
-            )
-        }
-            ?: 1) * 100
+        val percentage = (Constants.attendanceCount!!.presentAttendance * 100) / Constants.attendanceCount!!.allAttendance
         binding.progressBar.progress =  percentage
         binding.progressText.text = "$percentage%"
         if (percentage < 75) {

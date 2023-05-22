@@ -9,7 +9,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 
 object Constants {
-    val BASE_URL = "http://192.168.43.49:3000"
+    val BASE_URL = "http://192.168.82.56:3000"
     val resourceIds = arrayOf(
         R.mipmap.ic_laugh,
         R.mipmap.ic_normal,
